@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.tuan6b.lumaritscbridge.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": ["CommonUniformsMixin", "IrisSamplersMixin", "CloudMeshGeneratorAccessor", "MultiRegionCloudMeshGeneratorMixin"],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

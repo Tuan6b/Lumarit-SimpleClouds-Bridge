@@ -1,0 +1,44 @@
+plugins {
+	id 'net.neoforged.moddev' version "${moddev_version}"
+}
+
+base.archivesName = 'lumarit-scbridge-neoforge'
+
+repositories {
+	exclusiveContent {
+		forRepository { maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven' } }
+		filter { includeGroup 'maven.modrinth' }
+	}
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+neoForge {
+	version = neoforge_version
+}
+
+// Simple Clouds ships its public API as a nested jar (META-INF/jarjar); javac can't see inside that, so pull it out.
+configurations { simpleClouds }
+def simpleCloudsApi = tasks.register('extractSimpleCloudsApi', Copy) {
+	from({ zipTree(configurations.simpleClouds.singleFile) }) { include 'META-INF/jarjar/simplecloudsapi-*.jar' }
+	into layout.buildDirectory.dir('simplecloudsapi')
+	eachFile { path = name }
+	includeEmptyDirs = false
+}
+
+dependencies {
+	simpleClouds "maven.modrinth:simple-clouds:${simpleclouds_version}"
+	compileOnly "maven.modrinth:simple-clouds:${simpleclouds_version}"
+	compileOnly fileTree(layout.buildDirectory.dir('simplecloudsapi')).builtBy(simpleCloudsApi)
+	compileOnly "maven.modrinth:iris:${iris_version}"
+}
+
+processResources {
+	def version = project.version
+	inputs.property 'version', version
+	filesMatching('META-INF/neoforge.mods.toml') { expand 'version': version }
+}
+
+jar {
+	from(rootProject.file('LICENSE')) { rename { "${it}_lumarit_scbridge" } }
+}

@@ -1,0 +1,41 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "Apache-2.0"
+
+[[mods]]
+modId = "lumarit_scbridge"
+version = "${version}"
+displayName = "Lumarit Simple Clouds Bridge"
+authors = "Tuan6b"
+description = "Simple Clouds' clouds drawn by the shader pack (Lumarit, through Iris): the mod's cloud regions reach the pack as uniforms and the mod's own cloud drawing is switched off while a shader pack is in use."
+
+[[mixins]]
+config = "lumarit_scbridge.mixins.json"
+
+[[dependencies.lumarit_scbridge]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.lumarit_scbridge]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.21.2)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.lumarit_scbridge]]
+modId = "simpleclouds"
+type = "required"
+versionRange = "[0.7,)"
+ordering = "AFTER"
+side = "CLIENT"
+
+[[dependencies.lumarit_scbridge]]
+modId = "iris"
+type = "required"
+versionRange = "[1.8,)"
+ordering = "NONE"
+side = "CLIENT"
