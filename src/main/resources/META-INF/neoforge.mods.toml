@@ -7,7 +7,7 @@ modId = "lumarit_scbridge"
 version = "${version}"
 displayName = "Lumarit Simple Clouds Bridge"
 authors = "Tuan6b"
-description = "Simple Clouds' clouds drawn by the shader pack (Lumarit, through Iris): the mod's cloud regions reach the pack as uniforms and the mod's own cloud drawing is switched off while a shader pack is in use."
+description = "Lets an Iris shader pack draw Simple Clouds' clouds: while a pack is in use, Simple Clouds' own cloud drawing is switched off and its cloud regions and real 3D cloud shapes are handed to the pack, while its weather, rain and lightning keep running. Needs a pack that supports it, such as Lumarit 1.3-beta2 or later."
 
 [[mixins]]
 config = "lumarit_scbridge.mixins.json"

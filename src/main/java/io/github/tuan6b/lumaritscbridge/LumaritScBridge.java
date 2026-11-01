@@ -34,8 +34,9 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Hands Simple Clouds' cloud regions to the Iris shader pack as uniforms (contract v1 in agentchat.txt) and switches the
- * mod's own cloud drawing off while it does, so the pack draws those clouds itself. Rain, lightning and weather stay the mod's.
+ * Hands Simple Clouds' cloud regions (and, through {@link CloudField}, its cloud fields) to the Iris shader pack as uniforms,
+ * and switches the mod's own cloud drawing off while it does, so the pack draws those clouds itself. Rain, lightning and
+ * weather stay the mod's. The uniform contract is in README.md.
  */
 @Mod(value = LumaritScBridge.MOD_ID, dist = Dist.CLIENT)
 public final class LumaritScBridge {
@@ -52,9 +53,11 @@ public final class LumaritScBridge {
 	static {
 		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 		REPLACE_CLOUD_RENDERING = builder
-				.comment("While an Iris shader pack is in use, switch Simple Clouds' own cloud drawing off and hand its clouds to the pack (scActive, scRegion* uniforms).")
+				.comment("While an Iris shader pack is in use, switch Simple Clouds' own cloud drawing off and hand its clouds (regions and cloud fields) to the pack.",
+						"Needs a pack that supports it, such as Lumarit; with other packs, set this to false to see Simple Clouds' own clouds.")
 				.define("replaceCloudRendering", true);
-		DEBUG_LOG = builder.comment("Log scRegionCount and slot 0 every 5 seconds.").define("debugLog", false);
+		DEBUG_LOG = builder.comment("Every 5 seconds, log the region uniforms, slot 0, and each cloud field's state, GPU time and refresh count.")
+				.define("debugLog", false);
 		SPEC = builder.build();
 	}
 
