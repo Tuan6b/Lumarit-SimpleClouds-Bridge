@@ -42,21 +42,26 @@ public final class CloudField {
 	private static final String NOISE_ANCHOR = "float noise = getNoiseForLayerGroup(group, x, y, z, gradient) + fade;";
 	private static final String REGION_ANCHOR = "vec2 texelCoord = gl_GlobalInvocationID.xz + RegionSampleOffset;";
 
-	/** 8-block cells, +-1024 blocks: the mod's full-detail cubes. 16-block cells, +-4096 blocks: everything to the horizon. */
-	public static final CloudField NEAR = new CloudField(256, 256, 1), WIDE = new CloudField(512, 128, 2);
+	/**
+	 * 8-block cells, +-1024 blocks: the mod's full-detail cubes. 16-block cells, +-4096 blocks: the horizon. FAR's cells are
+	 * sized at refresh to span the mod's whole cloud area (80 blocks, +-10240 on HIGH), see cellUnits().
+	 */
+	public static final CloudField NEAR = new CloudField(256, 256, 1), WIDE = new CloudField(512, 128, 2), FAR = new CloudField(256, 32, 0);
 	/** Stored value = clamp(noise * 0.5 + 0.5); the mod makes a cell solid at noise > 0. 0 while not driving. */
 	public static float cut;
+	/** The mod's cloud draw radius in blocks; 0 while not driving. */
+	public static float cloudRadius;
 
 	private static ComputeShader shader;
-	private static boolean broken, regionsFresh, nearNext;
+	private static boolean broken, regionsFresh;
 	private static float regionX, regionZ;
-	private static int imageUnit = -1, timer, refreshes;
+	private static int imageUnit = -1, timer, refreshes, turn;
 	private static float gpuMillis = -1;
 
 	/** This field's uniform values; all 0 while there is no complete field. */
 	public final Vector3f origin = new Vector3f(), cell = new Vector3f(), dims = new Vector3f();
 	public float valid;
-	/** Texels across (x, z) and up (y), and cloud units per texel. */
+	/** Texels across (x, z) and up (y), and cloud units per texel (0 = fit the mod's cloud area). */
 	private final int width, height, cellUnits;
 	private int texture;
 
@@ -79,13 +84,11 @@ public final class CloudField {
 
 	static void update(boolean driving, float cloudBase, boolean timed) {
 		if (!driving || broken) {
-			cut = 0;
-			NEAR.clear();
-			WIDE.clear();
+			clearAll();
 			return;
 		}
 		// Refresh only when the mod's regions changed, one whole field per dispatch before any pack program samples it.
-		// The two fields take turns, so each follows at half the mod's mesh-gen rate and no frame pays for both.
+		// The fields take turns so no frame pays for two: of every 8 region updates (~23/s), NEAR gets 4, WIDE 3, FAR 1.
 		if (!regionsFresh || !(SimpleCloudsRenderer.getInstance().getMeshGenerator() instanceof MultiRegionCloudMeshGenerator generator))
 			return;
 		ComputeShader mesh = ((CloudMeshGeneratorAccessor) (Object) generator).lumaritScBridge$shader();
@@ -93,17 +96,28 @@ public final class CloudField {
 			return;
 		regionsFresh = false;
 		refreshes++;
-		nearNext = !nearNext;
+		int t = turn++ & 7;
 		try {
-			(nearNext ? NEAR : WIDE).refresh(generator, mesh, cloudBase, timed);
+			(t == 7 ? FAR : t % 2 == 0 ? NEAR : WIDE).refresh(generator, mesh, cloudBase, timed);
 			cut = 0.5f;
+			cloudRadius = generator.getCloudAreaMaxRadius() * LumaritScBridge.SCALE;
 		} catch (Exception e) {
 			LOGGER.error("Cloud fields disabled; the pack falls back to the cloud regions", e);
 			broken = true;
-			cut = 0;
-			NEAR.clear();
-			WIDE.clear();
+			clearAll();
 		}
+	}
+
+	private static void clearAll() {
+		cut = cloudRadius = 0;
+		NEAR.clear();
+		WIDE.clear();
+		FAR.clear();
+	}
+
+	/** FAR fits the mod's cloud area (getCloudAreaMaxRadius is in cloud units) and at least 2048 blocks of height. */
+	private int cellUnits(MultiRegionCloudMeshGenerator generator) {
+		return cellUnits > 0 ? cellUnits : Math.max(256 / height, -Math.floorDiv(-2 * generator.getCloudAreaMaxRadius(), width));
 	}
 
 	private void clear() {
@@ -120,7 +134,7 @@ public final class CloudField {
 			texture = createTexture(width, height);
 		if (imageUnit < 0)
 			imageUnit = BindingManager.getAvailableImageUnit();
-		int src = mesh.getId(), dst = shader.getId();
+		int src = mesh.getId(), dst = shader.getId(), units = cellUnits(generator);
 
 		// Same inputs the mod's last mesh pass used, then our grid: centred on the region texture, on the mod's cube grid.
 		copyUniform(src, dst, "Scroll", 3);
@@ -134,18 +148,18 @@ public final class CloudField {
 		LevelOfDetail[] lods = generator.getLodConfig().getLods();
 		int layer = 0;
 		float regionScale = 1;
-		while (regionScale * regionsTexSize < width * cellUnits) {
+		while (regionScale * regionsTexSize < width * units) {
 			if (layer == lods.length)
 				throw new IllegalStateException("Simple Clouds' region texture (" + regionsTexSize + " texels) can't span the cloud field");
 			regionScale = lods[layer++].chunkScale();
 		}
 		// Field corner on the mod's grid. Each texel samples its cube's min corner + half a cloud unit, i.e. the mod's own
 		// rule for its 8-block cubes (value at the corner, cube centred half a unit further), so silhouettes line up.
-		float x0 = regionX - width * cellUnits / 2f, z0 = regionZ - width * cellUnits / 2f, shift = cellUnits / 2f - 0.5f;
+		float x0 = regionX - width * units / 2f, z0 = regionZ - width * units / 2f, shift = units / 2f - 0.5f;
 		glProgramUniform3f(dst, glGetUniformLocation(dst, "RenderOffset"), x0 + shift, shift, z0 + shift);
-		glProgramUniform1f(dst, glGetUniformLocation(dst, "Scale"), cellUnits);
+		glProgramUniform1f(dst, glGetUniformLocation(dst, "Scale"), units);
 		glProgramUniform1i(dst, glGetUniformLocation(dst, "LodLevel"), layer);
-		glProgramUniform1f(dst, glGetUniformLocation(dst, "BridgeTexelStep"), cellUnits / regionScale);
+		glProgramUniform1f(dst, glGetUniformLocation(dst, "BridgeTexelStep"), units / regionScale);
 		glProgramUniform2f(dst, glGetUniformLocation(dst, "RegionSampleOffset"), (x0 + shift - regionX) / regionScale + regionsTexSize / 2f,
 				(z0 + shift - regionZ) / regionScale + regionsTexSize / 2f);
 		glProgramUniform1i(dst, glGetUniformLocation(dst, "BridgeField"), imageUnit);
@@ -167,7 +181,7 @@ public final class CloudField {
 
 		int scale = LumaritScBridge.SCALE;
 		origin.set(x0 * scale, cloudBase, z0 * scale);
-		cell.set(cellUnits * scale);
+		cell.set(units * scale);
 		dims.set(width, height, width);
 		valid = 1;
 	}
@@ -227,8 +241,9 @@ public final class CloudField {
 
 	/** One line for the 5-second debug log; resets the refresh count. */
 	static String debug() {
-		String line = String.format("near valid=%.0f origin=(%.0f, %.0f, %.0f) wide valid=%.0f origin=(%.0f, %.0f, %.0f) gpu=%.2fms refreshes=%d",
-				NEAR.valid, NEAR.origin.x, NEAR.origin.y, NEAR.origin.z, WIDE.valid, WIDE.origin.x, WIDE.origin.y, WIDE.origin.z, gpuMillis, refreshes);
+		String line = String.format("near valid=%.0f origin=(%.0f, %.0f, %.0f) wide valid=%.0f origin=(%.0f, %.0f, %.0f) far valid=%.0f origin=(%.0f, %.0f, %.0f) cell=%.0f radius=%.0f gpu=%.2fms refreshes=%d",
+				NEAR.valid, NEAR.origin.x, NEAR.origin.y, NEAR.origin.z, WIDE.valid, WIDE.origin.x, WIDE.origin.y, WIDE.origin.z,
+				FAR.valid, FAR.origin.x, FAR.origin.y, FAR.origin.z, FAR.cell.x, cloudRadius, gpuMillis, refreshes);
 		refreshes = 0;
 		return line;
 	}

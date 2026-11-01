@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import java.util.function.IntSupplier;
 
 /**
- * The pack declares scField and scFieldNear as customTextures (1x1x1 placeholders, so the samplers are always bound 3D
+ * The pack declares scField, scFieldNear and scFieldFar as customTextures (1x1x1 placeholders, so the samplers are always bound 3D
  * textures). Every program kind binds the pack's custom textures here; while a field is valid, its entry hands Iris our
  * texture instead of the placeholder.
  */
@@ -27,6 +27,7 @@ public class IrisSamplersMixin {
 		Object2ObjectMap<String, TextureAccess> swapped = new Object2ObjectOpenHashMap<>(textures);
 		lumaritScBridge$swap(swapped, "scField", CloudField.WIDE);
 		lumaritScBridge$swap(swapped, "scFieldNear", CloudField.NEAR);
+		lumaritScBridge$swap(swapped, "scFieldFar", CloudField.FAR);
 		return swapped;
 	}
 

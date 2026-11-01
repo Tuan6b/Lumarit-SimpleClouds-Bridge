@@ -37,7 +37,12 @@ public class CommonUniformsMixin {
 				.uniform3f(PER_FRAME, "scFieldNearOrigin", () -> CloudField.NEAR.origin)
 				.uniform3f(PER_FRAME, "scFieldNearCell", () -> CloudField.NEAR.cell)
 				.uniform3f(PER_FRAME, "scFieldNearDims", () -> CloudField.NEAR.dims)
-				.uniform1f(PER_FRAME, "scFieldNearValid", (FloatSupplier) () -> CloudField.NEAR.valid);
+				.uniform1f(PER_FRAME, "scFieldNearValid", (FloatSupplier) () -> CloudField.NEAR.valid)
+				.uniform3f(PER_FRAME, "scFieldFarOrigin", () -> CloudField.FAR.origin)
+				.uniform3f(PER_FRAME, "scFieldFarCell", () -> CloudField.FAR.cell)
+				.uniform3f(PER_FRAME, "scFieldFarDims", () -> CloudField.FAR.dims)
+				.uniform1f(PER_FRAME, "scFieldFarValid", (FloatSupplier) () -> CloudField.FAR.valid)
+				.uniform1f(PER_FRAME, "scCloudRadius", (FloatSupplier) () -> CloudField.cloudRadius);
 		for (int i = 0; i < LumaritScBridge.SLOTS; i++) {
 			Vector4f region = LumaritScBridge.region[i], xform = LumaritScBridge.xform[i], shape = LumaritScBridge.shape[i];
 			uniforms.uniform4f(PER_FRAME, "scRegion" + i, () -> region)
