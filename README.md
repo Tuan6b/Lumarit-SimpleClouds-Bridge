@@ -8,7 +8,7 @@ Simple Clouds draws its clouds itself, after the shader pack's final pass, with 
 - the mod's clouds are handed to the pack: where its cloud regions are, and the real 3D cloud shapes the mod generates;
 - Simple Clouds' weather, rain, lightning and sounds keep running as before.
 
-The pack has to support it. [Lumarit](https://github.com/Tuan6b/Lumarit) does (1.3-beta2 or later).
+The pack has to support it. [Lumarit](https://github.com/Tuan6b/Lumarit) does (1.3-beta3 or later; 1.3-beta4 recommended).
 
 ## Requirements
 
@@ -18,9 +18,9 @@ The pack has to support it. [Lumarit](https://github.com/Tuan6b/Lumarit) does (1
 | NeoForge | 21.1.x (tested on 21.1.252) |
 | Simple Clouds | 0.7.x. Tested with 0.7.3; the cloud fields rely on its `cube_mesh.comp`, see [Limits](#limits) |
 | Iris for NeoForge | 1.8.x (tested with 1.8.14-beta.1, with Sodium 0.8.13) |
-| Shader pack | one that reads the bridge's uniforms, e.g. Lumarit 1.3-beta2 or later |
+| Shader pack | one that reads the bridge's uniforms, e.g. Lumarit 1.3-beta3 or later |
 
-Lumarit 1.3-beta2 reads the regions and the near and wide fields. The far field, for clouds beyond about 4 km, needs a Lumarit build that declares `scFieldFar`; the current main branch does.
+Lumarit 1.3-beta3 and later read the regions and all three fields. 1.3-beta4 also fixes a large frame-rate drop in rain, so it is the one to use. Builds that don't declare `scFieldFar` (the first 1.3-beta2) draw no clouds beyond about 4 km.
 
 Client only; it does nothing on a server.
 
