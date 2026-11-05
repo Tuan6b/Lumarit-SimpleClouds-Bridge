@@ -1,6 +1,8 @@
-# Lumarit Simple Clouds Bridge
+# Iris Shaders - Simple Clouds Bridge
 
 A NeoForge 1.21.1 client mod that lets an Iris shader pack draw [Simple Clouds](https://modrinth.com/mod/simple-clouds)' clouds.
+
+**Unofficial add-on.** It isn't made by or affiliated with the Iris or Simple Clouds projects. Please report bugs [here](https://github.com/Tuan6b/Lumarit-SimpleClouds-Bridge/issues), not to them.
 
 Simple Clouds draws its clouds itself, after the shader pack's final pass, with its own shaders and vanilla lighting. A shader pack can't light, shadow or fog them, so they never match the rest of the picture. With this mod the pack draws them instead:
 
@@ -32,7 +34,7 @@ Put the jar in your `mods` folder next to Simple Clouds and Iris, and pick a sup
 
 ## Configuration
 
-`config/lumarit_scbridge-client.toml`:
+`config/iris_simpleclouds_bridge-client.toml`:
 
 | Option | Default | |
 |---|---|---|
@@ -176,7 +178,7 @@ JDK 21:
 ./gradlew build
 ```
 
-The jar is `build/libs/lumarit-scbridge-neoforge-<version>.jar`. Simple Clouds and Iris are compile-only dependencies, fetched from Modrinth's Maven. The Simple Clouds API jar is extracted from Simple Clouds' bundled jars at build time.
+The jar is `build/libs/iris-simpleclouds-bridge-neoforge-<version>+mc1.21.1.jar`. Simple Clouds and Iris are compile-only dependencies, fetched from Modrinth's Maven. The Simple Clouds API jar is extracted from Simple Clouds' bundled jars at build time.
 
 ## Licence
 

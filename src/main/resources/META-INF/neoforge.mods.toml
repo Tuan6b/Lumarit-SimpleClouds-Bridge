@@ -1,39 +1,41 @@
 modLoader = "javafml"
 loaderVersion = "[4,)"
 license = "Apache-2.0"
+issueTrackerURL = "https://github.com/Tuan6b/Lumarit-SimpleClouds-Bridge/issues"
 
 [[mods]]
-modId = "lumarit_scbridge"
+modId = "iris_simpleclouds_bridge"
 version = "${version}"
-displayName = "Lumarit Simple Clouds Bridge"
+displayName = "Iris Shaders - Simple Clouds Bridge"
 authors = "Tuan6b"
-description = "Lets an Iris shader pack draw Simple Clouds' clouds: while a pack is in use, Simple Clouds' own cloud drawing is switched off and its cloud regions and real 3D cloud shapes are handed to the pack, while its weather, rain and lightning keep running. Needs a pack that supports it, such as Lumarit 1.3-beta3 or later."
+displayURL = "https://github.com/Tuan6b/Lumarit-SimpleClouds-Bridge"
+description = "Unofficial add-on that lets an Iris shader pack draw Simple Clouds' clouds: while a pack is in use, Simple Clouds' own cloud drawing is switched off and its cloud regions and real 3D cloud shapes are handed to the pack, while its weather, rain and lightning keep running. Needs a pack that supports it, such as Lumarit 1.3-beta3 or later. Not made by or affiliated with the Iris or Simple Clouds projects."
 
 [[mixins]]
-config = "lumarit_scbridge.mixins.json"
+config = "iris_simpleclouds_bridge.mixins.json"
 
-[[dependencies.lumarit_scbridge]]
+[[dependencies.iris_simpleclouds_bridge]]
 modId = "neoforge"
 type = "required"
 versionRange = "[21.1,)"
 ordering = "NONE"
 side = "CLIENT"
 
-[[dependencies.lumarit_scbridge]]
+[[dependencies.iris_simpleclouds_bridge]]
 modId = "minecraft"
 type = "required"
 versionRange = "[1.21.1,1.21.2)"
 ordering = "NONE"
 side = "CLIENT"
 
-[[dependencies.lumarit_scbridge]]
+[[dependencies.iris_simpleclouds_bridge]]
 modId = "simpleclouds"
 type = "required"
 versionRange = "[0.7,)"
 ordering = "AFTER"
 side = "CLIENT"
 
-[[dependencies.lumarit_scbridge]]
+[[dependencies.iris_simpleclouds_bridge]]
 modId = "iris"
 type = "required"
 versionRange = "[1.8,)"

@@ -40,7 +40,7 @@ import java.util.List;
  */
 @Mod(value = LumaritScBridge.MOD_ID, dist = Dist.CLIENT)
 public final class LumaritScBridge {
-	public static final String MOD_ID = "lumarit_scbridge";
+	public static final String MOD_ID = "iris_simpleclouds_bridge";
 	public static final int SLOTS = 16;
 	static final int SCALE = SimpleCloudsConstants.CLOUD_SCALE; // blocks per cloud unit
 	private static final float EDGE_FADE = SCALE / SimpleCloudsConstants.REGION_EDGE_FADE_FACTOR;

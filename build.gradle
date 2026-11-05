@@ -2,7 +2,7 @@ plugins {
 	id 'net.neoforged.moddev' version "${moddev_version}"
 }
 
-base.archivesName = 'lumarit-scbridge-neoforge'
+base.archivesName = 'iris-simpleclouds-bridge-neoforge'
 
 repositories {
 	exclusiveContent {
@@ -40,5 +40,6 @@ processResources {
 }
 
 jar {
-	from(rootProject.file('LICENSE')) { rename { "${it}_lumarit_scbridge" } }
+	archiveVersion = "${project.version}+mc${minecraft_version}"
+	from(rootProject.file('LICENSE')) { rename { "${it}_iris_simpleclouds_bridge" } }
 }
