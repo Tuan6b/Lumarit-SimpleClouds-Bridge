@@ -8,7 +8,7 @@ Simple Clouds draws its clouds itself, after the shader pack's final pass, with 
 - the mod's clouds are handed to the pack: where its cloud regions are, and the real 3D cloud shapes the mod generates;
 - Simple Clouds' weather, rain, lightning and sounds keep running as before.
 
-The pack has to support it. [Lumarit](https://github.com/Tuan6b/Lumarit) does (1.3-beta3 or later; 1.3-beta4 recommended).
+The pack has to support it. [Lumarit](https://modrinth.com/shader/lumarit) does (1.3-beta3 or later; 1.3-beta4 recommended).
 
 ## Requirements
 
